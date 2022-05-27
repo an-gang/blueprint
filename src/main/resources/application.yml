@@ -1,0 +1,10 @@
+server:
+  port: 8080
+  tomcat:
+    max-http-form-post-size: 4MB
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://47.108.114.106:3306/blueprint?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: "%Hdk27tH2UgN"

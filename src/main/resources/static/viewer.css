@@ -1,0 +1,16 @@
+body{
+    margin: 0;
+    overflow: hidden;
+}
+
+
+svg{
+    height: 100vh;
+    width: 100vw;
+}
+#panel{
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%,0);
+}
