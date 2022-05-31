@@ -1,10 +1,11 @@
 package com.WangDeFa.blueprint.controller;
 
 import com.WangDeFa.blueprint.entity.Blueprint;
-import com.WangDeFa.blueprint.service.Main_Service_Interface;
+import com.WangDeFa.blueprint.service.Main_Service;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class Main_Controller {
 
     @Resource
-    private Main_Service_Interface service;
+    private Main_Service service;
 
     @RequestMapping("/uploadBlueprint")
     public String uploadBlueprint(String name, String front, String back) {
@@ -32,4 +33,14 @@ public class Main_Controller {
         return service.getFrontByName(name);
     }
 
+    @CrossOrigin("*")//TODO
+    @RequestMapping("/getBackByName")
+    public String getBackByName(String name) {
+        return service.getBackByName(name);
+    }
+
+    @RequestMapping("/admin")
+    public ModelAndView admin(){
+        return new ModelAndView("admin.html");
+    }
 }

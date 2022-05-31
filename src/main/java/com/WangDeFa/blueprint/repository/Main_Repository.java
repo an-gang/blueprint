@@ -1,23 +1,21 @@
 package com.WangDeFa.blueprint.repository;
 
 import com.WangDeFa.blueprint.entity.Blueprint;
-import com.WangDeFa.blueprint.entity.Tools;
+import com.WangDeFa.blueprint.other.Tools;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-public class Main_Repository implements Main_Repository_Interface {
+public class Main_Repository{
 
     @Resource
     private JdbcTemplate template;
 
-    @Override
     public String uploadBlueprint(Blueprint blueprint) {
         try {
             String sql = "INSERT INTO blueprint (blueprintID,name,front,back) VALUES (?,?,?,?)";
@@ -32,7 +30,6 @@ public class Main_Repository implements Main_Repository_Interface {
         }
     }
 
-    @Override
     public HashMap<String, Object> getBlueprintList() {
         HashMap<String, Object> rtn = new HashMap<>();
         try {
@@ -46,12 +43,21 @@ public class Main_Repository implements Main_Repository_Interface {
         return rtn;
     }
 
-    @Override
     public String getFrontByName(String name) {
         try {
             String sql = "SELECT front FROM blueprint WHERE name=?";
             List<Map<String, Object>> result = template.queryForList(sql, name);
             return (String) result.get(0).get("front");
+        } catch (DataAccessException e) {
+            return "服务器异常";
+        }
+    }
+
+    public String getBackByName(String name) {
+        try {
+            String sql = "SELECT back FROM blueprint WHERE name=?";
+            List<Map<String, Object>> result = template.queryForList(sql, name);
+            return (String) result.get(0).get("back");
         } catch (DataAccessException e) {
             return "服务器异常";
         }

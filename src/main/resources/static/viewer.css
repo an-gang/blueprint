@@ -1,16 +1,37 @@
-body{
+body {
     margin: 0;
     overflow: hidden;
 }
 
-
-svg{
+svg {
     height: 100vh;
     width: 100vw;
 }
-#panel{
+
+#blueprint {
+    background: black;
+}
+
+#panel {
     position: fixed;
     top: 0;
     left: 50%;
-    transform: translate(-50%,0);
+    transform: translate(-50%, 0);
+}
+
+#cover {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: white;
+    opacity: 0.5;
+}
+
+#cover img {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

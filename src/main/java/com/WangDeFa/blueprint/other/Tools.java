@@ -1,4 +1,4 @@
-package com.WangDeFa.blueprint.entity;
+package com.WangDeFa.blueprint.other;
 
 import java.util.UUID;
 
