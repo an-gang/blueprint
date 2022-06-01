@@ -7,8 +7,5 @@
 }
 
 #login {
-    position: absolute;
-    left: 90%;
-    top: 3%;
-
+    float: right;
 }

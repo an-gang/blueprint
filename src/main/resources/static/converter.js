@@ -13,14 +13,14 @@ $(document).ready(function () {
             $("#output").val(rawHtml.substring(89572, rawHtml.length - 20));
         }
     });
-    $("#selectAll").click(function () {
-        var output = $("#output");
-        if (output.val() === "") {
-            alert("无内容！");
-            return;
-        }
-        output.select();
-    });
+    // $("#selectAll").click(function () {
+    //     var output = $("#output");
+    //     if (output.val() === "") {
+    //         alert("无内容！");
+    //         return;
+    //     }
+    //     output.select();
+    // });
     $("#copy").click(function () {
         var output = $("#output");
         if (output.val() === "") {

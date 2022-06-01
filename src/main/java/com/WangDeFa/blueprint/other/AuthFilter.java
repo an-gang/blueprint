@@ -13,15 +13,19 @@ import java.io.IOException;
 public class AuthFilter implements Filter {
     private String whiteList[] = new String[]{
             "/",
+            "/favicon.ico",
+            "/lib/jquery-3.6.0.min.js",
+            "/lib/jquery.mousewheel.min.js",
+            "/lib/jszip.min.js",
             "/index.html",
             "/index.js",
             "/index.css",
-            "/favicon.ico",
             "/login.html",
             "/login.js",
             "/login.css",
             "/login",
-            "/getBlueprintList"
+            "/getBlueprintList",
+            "/getCurrentUser"
     };
 
     @Override
