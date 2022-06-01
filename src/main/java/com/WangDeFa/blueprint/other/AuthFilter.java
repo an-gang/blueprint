@@ -33,8 +33,7 @@ public class AuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String uri = request.getRequestURI();
-        System.out.println(uri);
-
+//        System.out.println(uri);
         if (inWhiteList(uri)) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
