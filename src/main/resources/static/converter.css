@@ -1,0 +1,17 @@
+#panel {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translate(-50%, 100%) scale(2);
+}
+
+#output {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 95vw;
+    height: 85vh;
+    transform: translate(-50%, 10%);
+    overflow: auto;
+    border: 1px black solid;
+}

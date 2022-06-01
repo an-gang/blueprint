@@ -2,36 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>后台</title>
+    <title>图纸上传</title>
     <script src="lib/jquery-3.6.0.min.js"></script>
     <script src="lib/jszip.min.js"></script>
     <script src="upload.js"></script>
-    <style>
-        #cover {
-            position: fixed;
-            left: 0;
-            top: 0;
-            height: 100%;
-            width: 100%;
-            background: white;
-            opacity: 0.5;
-        }
-
-        #cover img {
-            position: fixed;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-        }
-    </style>
+    <link rel="stylesheet" href="upload.css">
 </head>
 <body>
-----仅支持.txt格式图纸----<br>
-<label for="name">名称：</label><input id="name" type="text"/><br>
-<label for="front">正面：</label><input id="front" type="file" accept="text/plain"/><br>
-<label for="back">反面：</label><input id="back" type="file" accept="text/plain"/><br>
-<button id="confirm" type="button">确认</button>
-<button id="get" type="button">get</button>
-<div id="cover" style="display: none"><img src="img/loading.gif" height="300" width="400"/></div>
+<div id="main">
+    ----仅支持.txt格式图纸----<br>
+    <label for="name">名称：</label><input id="name" type="text"/><br>
+    <label for="front">正面：</label><input id="front" type="file" accept="text/plain"/><br>
+    <label for="back">反面：</label><input id="back" type="file" accept="text/plain"/><br>
+    <button id="confirm" type="button">确认</button>
+    <button id="get" type="button">get</button>
+    <div id="cover" style="display: none"><img src="img/loading.gif" height="300" width="400"/></div>
+</div>
 </body>
 </html>

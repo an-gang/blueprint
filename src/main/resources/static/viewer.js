@@ -1,5 +1,6 @@
 $(document).ready(function () {
     var name = window.location.href.substring(window.location.href.lastIndexOf("?name=") + 6);
+    document.title = name;
     var svgSourceFront;
     var svgSourceBack;
     $.post("/getFrontByName", {name: name}, function (data) {
@@ -77,7 +78,6 @@ $(document).ready(function () {
             var lastPageX = event.pageX;
             var lastPageY = event.pageY;
             blueprintDiv.bind("mousemove", function (event) {
-                console.log("绑");
                 x += event.pageX - lastPageX;
                 y += event.pageY - lastPageY;
                 blueprintDiv.find("svg").eq(0).attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(0)");
@@ -85,7 +85,6 @@ $(document).ready(function () {
                 lastPageY = event.pageY;
             });
             blueprintDiv.bind("mouseup", function () {
-                console.log("松");
                 $(this).unbind('mousemove');
                 $(this).unbind('mouseup');
             })
@@ -138,7 +137,27 @@ $(document).ready(function () {
         blueprintDiv.dblclick(function () {
             clearColor();
         });
-
+        //搜索功能
+        $("#search").click(function () {
+            $("circle").css("fill", '');
+            $("polygon").css("fill", '');
+            var searchText = $("#searchText").val();
+            var fuzzySearch = document.getElementById("fuzzySearch").checked;
+            if (searchText != '') {
+                if (fuzzySearch) {
+                    $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
+                    $("polygon[refdes*='" + searchText + "'i]").css("stroke", '#66FF00');
+                } else {
+                    $("circle[net='" + searchText + "'i]").css("fill", '#66FF00');
+                    $("polygon[refdes='" + searchText + "'i]").css("stroke", '#66FF00');
+                }
+            }
+        });
+        $('#searchText').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                $("#search").click();
+            }
+        });
 
         activeExtraFunctions();
     }
@@ -146,6 +165,7 @@ $(document).ready(function () {
     //必须现有svg后才能激活的功能，该方法每次切换正反面后都要再次调用
     function activeExtraFunctions() {
         var circleElements = $("circle");
+        //鼠标悬浮显示点位信息
         circleElements.on("mouseover", function (e) {
             $("body").append("<div id='tip_div' style='color:rgb(255,255,0);font-size: 8px;font-weight: bold'>" +
                 "pin: " + $(this).attr("pin") + "<br>" +
@@ -162,6 +182,7 @@ $(document).ready(function () {
         }).mousemove(function (e) {
             $("#tip_div").css({"top": (e.pageY + 10) + "px", "position": "absolute", "left": (e.pageX + 20) + "px"})
         });
+        //左键单击显示连接点和右键单击显示详细信息
         circleElements.mousedown(function (e) {
             //鼠标右键单击显示详细信息
             if (e.which === 3) {

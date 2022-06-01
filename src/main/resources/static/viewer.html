@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>图纸阅读器</title>
+    <title>viewer</title>
     <script src="lib/jquery-3.6.0.min.js"></script>
     <script src="lib/jquery.mousewheel.min.js"></script>
     <script src="lib/jszip.min.js"></script>
@@ -11,7 +11,13 @@
 </head>
 <body>
 <div id="blueprint"></div>
-<div id="panel"><button id="switch">切换正反面</button></div>
+<div id="panel">
+    <input type="text" name="searchText" id="searchText" title=""/>
+    <input type="checkbox" name="fuzzySearch" id="fuzzySearch" checked="checked"/>
+    <label for="fuzzySearch" style="color: white">模糊搜索</label>
+    <input type="submit" name="search" id="search" value="搜索"/>
+    <button id="switch">切换正反面</button>
+</div>
 <div id="cover"><img src="img/loading.gif" height="300" width="400"/></div>
 </body>
 </html>

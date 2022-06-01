@@ -1,0 +1,14 @@
+#main {
+    position: absolute;
+    top: 0;
+    left: 45%;
+    transform: translate(-50%, 0);
+    font-size: 2em;
+}
+
+#login {
+    position: absolute;
+    left: 90%;
+    top: 3%;
+
+}
