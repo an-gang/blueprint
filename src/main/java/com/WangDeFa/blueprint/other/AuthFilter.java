@@ -25,7 +25,7 @@ public class AuthFilter implements Filter {
             "/login.css",
             "/login",
             "/getBlueprintList",
-            "/getCurrentUser"
+            "/getCurrentUser",
     };
 
     @Override
@@ -33,7 +33,7 @@ public class AuthFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
         String uri = request.getRequestURI();
-//        System.out.println(uri);
+//        System.out.println(uri+"==="+request.getParameter("name"));
         if (inWhiteList(uri)) {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
