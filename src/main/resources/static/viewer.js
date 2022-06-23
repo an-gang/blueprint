@@ -158,26 +158,6 @@ $(document).ready(function () {
             $("#searchText").val("");
             clearColor();
         });
-        //搜索功能
-        $("#search").click(function () {
-            clearColor();
-            var searchText = $("#searchText").val();
-            var fuzzySearch = document.getElementById("fuzzySearch").checked;
-            if (searchText !== "") {
-                if (fuzzySearch) {
-                    $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
-                    $("polygon[refdes*='" + searchText + "'i]").css("stroke", '#66FF00');
-                } else {
-                    $("circle[net='" + searchText + "'i]").css("fill", '#66FF00');
-                    $("polygon[refdes='" + searchText + "'i]").css("stroke", '#66FF00');
-                }
-            }
-        });
-        $('#searchText').bind('keypress', function (event) {
-            if (event.keyCode == "13") {
-                $("#search").click();
-            }
-        });
         //旋转功能
         $("#rotateLeft").click(function () {
             rotate -= 90;
@@ -187,14 +167,14 @@ $(document).ready(function () {
             rotate += 90;
             blueprintDiv.children(":first").attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
         });
-
         activeExtraFunctions();
     }
 
     //必须先有svg后才能激活的功能，该方法每次切换正反面后都要再次调用
     function activeExtraFunctions() {
-        //显示元器件名称
+        //显示元器件名称，并保存所有名称以供搜索
         var blueprintDiv = $("#blueprint");
+        var componentList = [];
         blueprintDiv.children(":first").children(":first").attr("transform", "scale(1,1)");//修正镜面翻转
         $("polygon").each(function () {
             var points = $(this).attr("points").split(" ");
@@ -219,15 +199,17 @@ $(document).ready(function () {
                 $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='transform:rotate(-90deg) scale(" + size + ")' text-anchor='middle'>" + $(this).attr("refdes") + "</text>")
             }
             // $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='transform:rotate(-25deg) scale(" + size + ")' text-anchor='middle'>" + $(this).attr("refdes") + "</text>")
+            //保存名称
+            componentList.push($(this).attr("refdes"));
         });
         blueprintDiv.html(blueprintDiv.html());//强制重新渲染，否则只append对svg标签无效，不会渲染
         //鼠标悬浮显示点位信息
         var circleElements = $("circle");
         circleElements.on("mouseover", function (e) {
             $("body").append("<div id='tip_div' style='color:rgb(255,255,0);font-size: 8px;font-weight: bold'>" +
-                "pin: " + $(this).attr("number") + "<br>" +
+                "脚位：" + $(this).attr("number") + "<br>" +
                 $(this).attr('net') + "<br>" +
-                "refdes: " + $(this).parent().find("polygon").attr("refdes") + "</div>");
+                "位置：" + $(this).parent().find("polygon").attr("refdes") + "</div>");
             $("#tip_div").css({
                 "top": (e.pageY + 10) + "px",
                 "position": "absolute",
@@ -255,6 +237,43 @@ $(document).ready(function () {
                 refdes = $(this).attr("refdes");
                 number = $(this).attr("number");
                 highlightConnection(net, refdes, number);
+            }
+        });
+        //搜索功能
+        var svgElement = blueprintDiv.children(":first");
+        $("#search").click(function () {
+            clearColor();
+            var searchText = $("#searchText").val();
+            for (var i = 0; i < componentList.length; i++) {
+                if (componentList[i].toUpperCase() === searchText.toUpperCase()) {
+                    svgElement.attr("transform", "scale(1) translate(0,0) rotate(" + rotate + ")");
+                    var $component = $("polygon[refdes='" + componentList[i] + "']");
+                    var originalOffset = $component.offset();
+                    x = ($(window).width() / 2 - originalOffset.left) * scale;
+                    y = ($(window).height() / 2 - originalOffset.top) * scale;
+                    svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
+                    $component.css("fill", '#cd3811');
+                    break;
+                }
+            }
+
+            //旧搜索代码
+            // clearColor();
+            // var searchText = $("#searchText").val();
+            // var fuzzySearch = document.getElementById("fuzzySearch").checked;
+            // if (searchText !== "") {
+            //     if (fuzzySearch) {
+            //         $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
+            //         $("polygon[refdes*='" + searchText + "'i]").css("stroke", '#66FF00');
+            //     } else {
+            //         $("circle[net='" + searchText + "'i]").css("fill", '#66FF00');
+            //         $("polygon[refdes='" + searchText + "'i]").css("stroke", '#66FF00');
+            //     }
+            // }
+        });
+        $('#searchText').bind('keypress', function (event) {
+            if (event.keyCode === 13) {
+                $("#search").click();
             }
         });
     }
