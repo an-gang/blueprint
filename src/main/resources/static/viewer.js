@@ -194,9 +194,9 @@ $(document).ready(function () {
         $("polygon").each(function () {
             componentList.push($(this).attr("refdes"));
         });
-        var svgElement = $("#blueprint").children(":first");
         $("#search").click(function () {
             clearColor();
+            var svgElement = $("#blueprint").children(":first");
             var searchText = $("#searchText").val();
             if ($("#searchSignalOn").prop("checked")) {
                 $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
