@@ -37,20 +37,57 @@ svg {
     transform: translate(-50%, -50%);
 }
 
-text{
+text {
     fill: rgb(180, 189, 255);
     stroke-width: 0;
-    transform-box:fill-box;
+    transform-box: fill-box;
     transform-origin: center;
     z-index: -1;
-    /*transform: translate(-50%, -50%);*/
+    text-anchor: middle;
 }
 
-circle{
+circle {
     stroke: rgba(255, 255, 255, 0.61);
     stroke-width: 1px;
 }
-polygon{
+
+polygon {
     stroke: rgba(255, 255, 255, 0.6);
     stroke-width: 1px;
+}
+
+.horizontalText {
+    transform: rotate(0deg);
+}
+
+.horizontalTextRotateX {
+    transform: rotate(0deg) rotateX(180deg);
+}
+
+.horizontalTextRotateY {
+    transform: rotate(0deg) rotateY(180deg);
+}
+
+.horizontalTextRotateXY {
+    transform: rotate(0deg) rotateX(180deg) rotateY(180deg);
+}
+
+.verticalText {
+    transform: rotate(-90deg);
+}
+
+.verticalTextRotateX {
+    transform: rotate(-90deg) rotateX(180deg);
+}
+
+.verticalTextRotateY {
+    transform: rotate(-90deg) rotateY(180deg);
+}
+
+.verticalTextRotateXY {
+    transform: rotate(-90deg) rotateX(180deg) rotateY(180deg);
+}
+
+label{
+    color: white;
 }

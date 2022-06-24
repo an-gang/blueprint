@@ -10,7 +10,7 @@ $(document).ready(function () {
         fileReader.readAsText(sourceFile);
         fileReader.onload = function () {
             var rawHtml = this.result;
-            $("#output").val(rawHtml.substring(89572, rawHtml.length - 20));
+            $("#output").val(rawHtml.substring(rawHtml.indexOf("<div id=\"main\">") + 15, rawHtml.length - 20));//有些图纸还带着 d="main"> 因为长度不一样
         }
     });
     // $("#selectAll").click(function () {

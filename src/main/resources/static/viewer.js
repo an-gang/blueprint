@@ -32,6 +32,7 @@ $(document).ready(function () {
     var refdes = "";
     var number = "";
     var rotate = 0;
+    var isTextShowed = false;
 
     //不需要有svg就能激活的基本功能，仅在页面初始化时执行一次
     function activeFunctions() {
@@ -49,15 +50,6 @@ $(document).ready(function () {
             if (delta > 0) {
                 scale++;
             } else {
-                // if (scale === 1) {
-                //     scale = 1;
-                //     // x = 0;
-                //     // y = 0;
-                //     svgElement.attr("transform", "scale(1) translate(0,0) rotate(0)");
-                //     return;
-                // } else {
-                //     scale--;
-                // }
                 if (scale !== 1) {
                     scale--;
                 }
@@ -76,6 +68,9 @@ $(document).ready(function () {
             x = event.pageX - scaledScreenX;
             y = event.pageY - scaledScreenY;
             svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
+            if (isTextShowed) {
+                showText();
+            }
         });
         //拖拽
         blueprintDiv.mousedown(function (event) {
@@ -91,7 +86,10 @@ $(document).ready(function () {
             blueprintDiv.bind("mouseup", function () {
                 $(this).unbind('mousemove');
                 $(this).unbind('mouseup');
-            })
+                if (isTextShowed) {
+                    showText();
+                }
+            });
         });
         //切换正反面
         $("#switch").click(function () {
@@ -167,42 +165,71 @@ $(document).ready(function () {
             rotate += 90;
             blueprintDiv.children(":first").attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
         });
+        //显示元器件名称
+        $("#showText").click(function () {
+            isTextShowed = !isTextShowed;
+            if (isTextShowed) {
+                showText();
+                $("#showText").text("隐藏名称");
+            } else {
+                $("text").remove();
+                $("#showText").text("显示名称（卡顿）");
+            }
+        });
         activeExtraFunctions();
     }
 
     //必须先有svg后才能激活的功能，该方法每次切换正反面后都要再次调用
     function activeExtraFunctions() {
-        //显示元器件名称，并保存所有名称以供搜索
-        var blueprintDiv = $("#blueprint");
-        var componentList = [];
-        blueprintDiv.children(":first").children(":first").attr("transform", "scale(1,1)");//修正镜面翻转
-        $("polygon").each(function () {
-            var points = $(this).attr("points").split(" ");
-            var topLeft = points[0].split(",");
-            var bottomRight = points[2].split(",");
-            var centerX = parseFloat(topLeft[0]) + (parseFloat(bottomRight[0]) - parseFloat(topLeft[0])) / 2;
-            var centerY = parseFloat(topLeft[1]) + (parseFloat(bottomRight[1]) - parseFloat(topLeft[1])) / 2;
-            var width = Math.abs(parseFloat(bottomRight[0]) - parseFloat(topLeft[0]));
-            var height = Math.abs(parseFloat(bottomRight[1]) - parseFloat(topLeft[1]));
-            var size = 1;
-            if (width > height) {
-                size = height * 0.01;
-                if (size < 0.7) {
-                    size = 0.7;
-                }
-                $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='transform:rotate(0deg) scale(" + size + ")' text-anchor='middle'>" + $(this).attr("refdes") + "</text>")
+        bindCircleFunctions();
+        //搜索功能
+        $("#searchSignalOn").click(function () {
+            if ($("#searchSignalOn").prop("checked")) {
+                $("#search").val("搜索信号");
             } else {
-                size = width * 0.01;
-                if (size < 0.7) {
-                    size = 0.7;
-                }
-                $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='transform:rotate(-90deg) scale(" + size + ")' text-anchor='middle'>" + $(this).attr("refdes") + "</text>")
+                $("#search").val("搜索元件");
             }
-            // $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='transform:rotate(-25deg) scale(" + size + ")' text-anchor='middle'>" + $(this).attr("refdes") + "</text>")
-            //保存名称
+        });
+        var componentList = [];
+        $("polygon").each(function () {
             componentList.push($(this).attr("refdes"));
         });
-        blueprintDiv.html(blueprintDiv.html());//强制重新渲染，否则只append对svg标签无效，不会渲染
+        var svgElement = $("#blueprint").children(":first");
+        $("#search").click(function () {
+            clearColor();
+            var searchText = $("#searchText").val();
+            if ($("#searchSignalOn").prop("checked")) {
+                $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
+            } else {
+                for (var i = 0; i < componentList.length; i++) {
+                    if (componentList[i].toUpperCase() === searchText.toUpperCase()) {
+                        svgElement.attr("transform", "scale(1) translate(0,0) rotate(" + rotate + ")");
+                        var $component = $("polygon[refdes='" + componentList[i] + "']");
+                        var originalOffset = $component.offset();
+                        x = ($(window).width() / 2 - originalOffset.left) * scale;
+                        y = ($(window).height() / 2 - originalOffset.top) * scale;
+                        svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
+                        $component.css("fill", '#cd3811');
+                        break;
+                    }
+                }
+            }
+        });
+        $('#searchText').bind('keypress', function (event) {
+            if (event.keyCode === 13) {
+                $("#search").click();
+            }
+        });
+    }
+
+    function clearColor() {
+        //清空选择点
+        $("circle").css("fill", "");
+        //清空选择框
+        $("polygon").css("fill", '').css("stroke", "");
+    }
+
+    function bindCircleFunctions() {
         //鼠标悬浮显示点位信息
         var circleElements = $("circle");
         circleElements.on("mouseover", function (e) {
@@ -216,7 +243,6 @@ $(document).ready(function () {
                 "left": (e.pageX + 20) + "px"
             }).show("fast")
         }).mouseout(function () {
-            this.title = this.Mytitle;
             $("#tip_div").remove()
         }).mousemove(function (e) {
             $("#tip_div").css({"top": (e.pageY + 10) + "px", "position": "absolute", "left": (e.pageX + 20) + "px"})
@@ -239,50 +265,6 @@ $(document).ready(function () {
                 highlightConnection(net, refdes, number);
             }
         });
-        //搜索功能
-        var svgElement = blueprintDiv.children(":first");
-        $("#search").click(function () {
-            clearColor();
-            var searchText = $("#searchText").val();
-            for (var i = 0; i < componentList.length; i++) {
-                if (componentList[i].toUpperCase() === searchText.toUpperCase()) {
-                    svgElement.attr("transform", "scale(1) translate(0,0) rotate(" + rotate + ")");
-                    var $component = $("polygon[refdes='" + componentList[i] + "']");
-                    var originalOffset = $component.offset();
-                    x = ($(window).width() / 2 - originalOffset.left) * scale;
-                    y = ($(window).height() / 2 - originalOffset.top) * scale;
-                    svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
-                    $component.css("fill", '#cd3811');
-                    break;
-                }
-            }
-
-            //旧搜索代码
-            // clearColor();
-            // var searchText = $("#searchText").val();
-            // var fuzzySearch = document.getElementById("fuzzySearch").checked;
-            // if (searchText !== "") {
-            //     if (fuzzySearch) {
-            //         $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
-            //         $("polygon[refdes*='" + searchText + "'i]").css("stroke", '#66FF00');
-            //     } else {
-            //         $("circle[net='" + searchText + "'i]").css("fill", '#66FF00');
-            //         $("polygon[refdes='" + searchText + "'i]").css("stroke", '#66FF00');
-            //     }
-            // }
-        });
-        $('#searchText').bind('keypress', function (event) {
-            if (event.keyCode === 13) {
-                $("#search").click();
-            }
-        });
-    }
-
-    function clearColor() {
-        //清空选择点
-        $("circle").css("fill", "");
-        //清空选择框
-        $("polygon").css("fill", '').css("stroke", "");
     }
 
     function highlightConnection(net, refdes, number) {
@@ -295,4 +277,76 @@ $(document).ready(function () {
         selectedPolygon.css("stroke", "red");
         selectedPolygon.parent().children("circle[number='" + number + "']").css("fill", "red");
     }
+
+    function showText() {
+        //显示元器件名称，并保存所有名称以供搜索
+        $("text").remove();
+        var blueprintDiv = $("#blueprint");
+        var flip = blueprintDiv.children(":first").children(":first").attr("transform");
+        flip = flip.substring(6, flip.length - 1).split(",");
+        $("polygon").each(function () {
+            if (isVisible($(this))) {
+                var points = $(this).attr("points").split(" ");
+                var topLeft = points[0].split(",");
+                var bottomRight = points[2].split(",");
+                var centerX = parseFloat(topLeft[0]) + (parseFloat(bottomRight[0]) - parseFloat(topLeft[0])) / 2;
+                var centerY = parseFloat(topLeft[1]) + (parseFloat(bottomRight[1]) - parseFloat(topLeft[1])) / 2;
+                var width = Math.abs(parseFloat(bottomRight[0]) - parseFloat(topLeft[0]));
+                var height = Math.abs(parseFloat(bottomRight[1]) - parseFloat(topLeft[1]));
+                var fontSize = 1;
+                if (width > height) {
+                    fontSize = height * 0.17;
+                    if (fontSize < 25) {
+                        fontSize *= 1.8;
+                    } else if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 5) {
+                        fontSize *= 4;
+                    }
+                    if (fontSize * scale > 50) {
+                        //修正镜面翻转
+                        if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalText'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateX'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateY'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
+                        }
+                    }
+                } else {
+                    fontSize = width * 0.17;
+                    if (fontSize < 25) {
+                        fontSize *= 1.8;
+                    } else if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 5) {
+                        fontSize *= 4;
+                    }
+                    if (fontSize * scale > 50) {
+                        //修正镜面翻转
+                        if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextr'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateX'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateY'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
+                        }
+                    }
+                }
+            }
+        });
+        blueprintDiv.html(blueprintDiv.html());//强制重新渲染，否则只append对svg标签无效，不会渲染
+        //重新加载事件
+        bindCircleFunctions();
+    }
+
+    function isVisible($element) {
+        var offset = $element.offset();
+        return offset.left >= -1 && offset.left < $(window).width() && offset.top >= -1 && offset.top < $(window).height();
+    }
+
 });
