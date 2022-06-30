@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>adminViewer</title>
+    <script src="lib/jquery-3.6.0.min.js"></script>
+    <script src="lib/jquery.mousewheel.min.js"></script>
+    <script src="lib/jszip.min.js"></script>
+    <script src="adminViewer.js"></script>
+    <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+<div id="blueprint"></div>
+<div id="panel">
+    <input type="text" name="searchText" id="searchText" title=""/>
+    <input type="checkbox" id="searchSignalOn"><label for="searchSignalOn">信号</label>
+    <input type="submit" name="search" id="search" value="搜索元件"/>
+    <button id="switch">切换正反面</button>
+    <button id="rotateLeft">向左旋转</button>
+    <button id="rotateRight">向右旋转</button>
+    <button id="showText">显示全部名称</button>
+</div>
+<div id="cover"><img src="img/loading.gif" height="300" width="400"/></div>
+</body>
+</html>
