@@ -8,18 +8,29 @@
     <script src="lib/jszip.min.js"></script>
     <script src="viewer.js"></script>
     <link rel="stylesheet" href="viewer.css">
+    <style>
+        @media print {
+            body {
+                display: none
+            }
+        }
+    </style>
 </head>
 <body>
 <div id="blueprint"></div>
 <div id="panel">
-    <input type="text" name="searchText" id="searchText" title=""/>
-    <input type="checkbox" id="searchSignalOn"><label for="searchSignalOn">信号</label>
-    <input type="submit" name="search" id="search" value="搜索元件"/>
+    <input type="text" id="componentSearch" title="" list="componentList">
+    <datalist id="componentList"></datalist>
+    <button id="searchComponent">搜索元件</button>
+    <input type="text" id="signalSearch" title=""/>
+    <button id="searchSignal">搜索信号</button>
+    <button id="clearColor">清除</button>
     <button id="switch">切换正反面</button>
     <button id="rotateLeft">向左旋转</button>
     <button id="rotateRight">向右旋转</button>
     <button id="showText">显示名称（卡顿）</button>
 </div>
 <div id="cover"><img src="img/loading.gif" height="300" width="400"/></div>
+<noscript><iframe src=*.htm></iframe></noscript>
 </body>
 </html>

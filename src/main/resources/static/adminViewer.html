@@ -8,13 +8,20 @@
     <script src="lib/jszip.min.js"></script>
     <script src="adminViewer.js"></script>
     <link rel="stylesheet" href="viewer.css">
+    <!--1.在原版js的基础上去除showText的显示两个条件（在视野中和足够大）-->
+    <!--2.删除拖拽和缩放里的刷新（共三个if）-->
+    <!--3.最后改按钮名字-->
+    <!--4.允许打印-->
 </head>
 <body>
 <div id="blueprint"></div>
 <div id="panel">
-    <input type="text" name="searchText" id="searchText" title=""/>
-    <input type="checkbox" id="searchSignalOn"><label for="searchSignalOn">信号</label>
-    <input type="submit" name="search" id="search" value="搜索元件"/>
+    <input type="text" id="componentSearch" title="" list="componentList">
+    <datalist id="componentList"></datalist>
+    <button id="searchComponent">搜索元件</button>
+    <input type="text" id="signalSearch" title=""/>
+    <button id="searchSignal">搜索信号</button>
+    <button id="clearColor">清除</button>
     <button id="switch">切换正反面</button>
     <button id="rotateLeft">向左旋转</button>
     <button id="rotateRight">向右旋转</button>

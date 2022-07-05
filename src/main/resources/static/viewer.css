@@ -44,6 +44,7 @@ text {
     transform-origin: center;
     z-index: -1;
     text-anchor: middle;
+    pointer-events: none;
 }
 
 circle {
@@ -88,6 +89,6 @@ polygon {
     transform: rotate(-90deg) rotateX(180deg) rotateY(180deg);
 }
 
-label{
+label {
     color: white;
 }

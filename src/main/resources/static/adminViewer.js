@@ -1,4 +1,3 @@
-//在原版js的基础上去除showText的显示两个条件（在视野中和足够大）并删除拖拽和缩放里的刷新
 $(document).ready(function () {
     var name = window.location.href.substring(window.location.href.lastIndexOf("?name=") + 6);
     document.title = name;
@@ -10,6 +9,12 @@ $(document).ready(function () {
             unZippedObject.file("front").async("string").then(function (svgSource) {
                 //加载正面
                 $("#blueprint").html(svgSource);
+                //补救措施，旧图纸没有去除无效项
+                $("g").each(function () {
+                    if ($(this).attr("style") === "display: none;") {
+                        $(this).remove();
+                    }
+                });
                 activeFunctions();
                 $("#cover").hide();
                 svgSourceFront = svgSource;
@@ -72,11 +77,18 @@ $(document).ready(function () {
         });
         //拖拽
         blueprintDiv.mousedown(function (event) {
+            event.preventDefault();
             var lastPageX = event.pageX;
             var lastPageY = event.pageY;
             blueprintDiv.bind("mouseup", function () {
                 $(this).unbind('mousemove');
                 $(this).unbind('mouseup');
+                $(this).unbind('mouseout');
+            });
+            blueprintDiv.bind("mouseout", function () {
+                $(this).unbind('mousemove');
+                $(this).unbind('mouseup');
+                $(this).unbind('mouseout');
             });
             blueprintDiv.bind("mousemove", function (event) {
                 x += event.pageX - lastPageX;
@@ -97,8 +109,14 @@ $(document).ready(function () {
                     rotate = 0;
                     displaying = "back";
 
-                    $("#searchText").val("");
+                    $("#componentSearch").val("");
+                    $("#signalSearch").val("");
                     blueprintDiv.html(svgSourceBack);
+                    $("g").each(function () {
+                        if ($(this).attr("style") === "display: none;") {
+                            $(this).remove();
+                        }
+                    });
                     activeExtraFunctions();
                     if (net !== "") {
                         highlightConnection(net, refdes, number);
@@ -115,8 +133,14 @@ $(document).ready(function () {
                             rotate = 0;
                             displaying = "back";
 
-                            $("#searchText").val("");
+                            $("#componentSearch").val("");
+                            $("#signalSearch").val("");
                             blueprintDiv.html(svgSourceBack);
+                            $("g").each(function () {
+                                if ($(this).attr("style") === "display: none;") {
+                                    $(this).remove();
+                                }
+                            });
                             activeExtraFunctions();
                             if (net !== "") {
                                 highlightConnection(net, refdes, number);
@@ -133,8 +157,14 @@ $(document).ready(function () {
                 rotate = 0;
                 displaying = "front";
 
-                $("#searchText").val("");
+                $("#componentSearch").val("");
+                $("#signalSearch").val("");
                 blueprintDiv.html(svgSourceFront);
+                $("g").each(function () {
+                    if ($(this).attr("style") === "display: none;") {
+                        $(this).remove();
+                    }
+                });
                 activeExtraFunctions();
                 if (net !== "") {
                     highlightConnection(net, refdes, number);
@@ -145,10 +175,32 @@ $(document).ready(function () {
         document.oncontextmenu = function () {
             return false;
         };
-        //双击清空颜色
+        //禁用常用快捷键
+        window.onkeydown = function (e) {
+            if (e.code === "F12") {
+                e.preventDefault();
+            }
+            else if (e.ctrlKey && e.shiftKey && e.code === "KeyI") {
+                e.preventDefault();
+            }
+            else if (e.ctrlKey && e.code === "KeyS") {
+                e.preventDefault();
+            }
+            // else if (e.ctrlKey && e.code === "KeyP") {
+            //     e.preventDefault();
+            // }
+        };
+        //清空颜色，双击或按钮
         blueprintDiv.dblclick(function () {
             net = "";
-            $("#searchText").val("");
+            $("#componentSearch").val("");
+            $("#signalSearch").val("");
+            clearColor();
+        });
+        $("#clearColor").click(function () {
+            net = "";
+            $("#componentSearch").val("");
+            $("#signalSearch").val("");
             clearColor();
         });
         //旋转功能
@@ -165,10 +217,12 @@ $(document).ready(function () {
             isTextShowed = !isTextShowed;
             if (isTextShowed) {
                 showText();
-                $("#showText").text("隐藏名称");
+                $("#showText").text("隐藏全部名称");
             } else {
-                $("text").remove();
-                $("#showText").text("显示名称（卡顿）");
+                setTimeout(function () {
+                    $("text").remove();
+                }, 64);
+                $("#showText").text("显示全部名称");
             }
         });
         activeExtraFunctions();
@@ -177,42 +231,45 @@ $(document).ready(function () {
     //必须先有svg后才能激活的功能，该方法每次切换正反面后都要再次调用
     function activeExtraFunctions() {
         bindCircleFunctions();
-        //搜索功能
-        $("#searchSignalOn").click(function () {
-            if ($("#searchSignalOn").prop("checked")) {
-                $("#search").val("搜索信号");
-            } else {
-                $("#search").val("搜索元件");
-            }
-        });
+        //搜索元件
         var componentList = [];
+        $("#componentList").html("");
         $("polygon").each(function () {
-            componentList.push($(this).attr("refdes"));
+            var name = $(this).attr("refdes");
+            componentList.push(name);
+            $("#componentList").append("<option>" + name + "</option>");
         });
-        $("#search").click(function () {
-            clearColor();
+        $("#searchComponent").click(function () {
+            $("polygon").css("fill", '').css("stroke", "");
             var svgElement = $("#blueprint").children(":first");
-            var searchText = $("#searchText").val();
-            if ($("#searchSignalOn").prop("checked")) {
-                $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
-            } else {
-                for (var i = 0; i < componentList.length; i++) {
-                    if (componentList[i].toUpperCase() === searchText.toUpperCase()) {
-                        svgElement.attr("transform", "scale(1) translate(0,0) rotate(" + rotate + ")");
-                        var $component = $("polygon[refdes='" + componentList[i] + "']");
-                        var originalOffset = $component.offset();
-                        x = ($(window).width() / 2 - originalOffset.left) * scale;
-                        y = ($(window).height() / 2 - originalOffset.top) * scale;
-                        svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
-                        $component.css("fill", '#cd3811');
-                        break;
-                    }
+            var searchText = $("#componentSearch").val();
+            for (var i = 0; i < componentList.length; i++) {
+                if (componentList[i].toUpperCase() === searchText.toUpperCase()) {
+                    svgElement.attr("transform", "scale(1) translate(0,0) rotate(" + rotate + ")");
+                    var $component = $("polygon[refdes='" + componentList[i] + "']");
+                    var originalOffset = $component.offset();
+                    x = ($(window).width() / 2 - originalOffset.left) * scale;
+                    y = ($(window).height() / 2 - originalOffset.top) * scale;
+                    svgElement.attr("transform", "translate(" + x + "," + y + ") scale(" + scale + ") rotate(" + rotate + ")");
+                    $component.css("fill", '#cd3811');
+                    break;
                 }
             }
         });
-        $('#searchText').bind('keypress', function (event) {
+        $('#componentSearch').bind('keypress', function (event) {
             if (event.keyCode === 13) {
-                $("#search").click();
+                $("#searchComponent").click();
+            }
+        });
+        //搜索信号
+        $("#searchSignal").click(function () {
+            $("circle").css("fill", "");
+            var searchText = $("#signalSearch").val();
+            $("circle[net*='" + searchText + "'i]").css("fill", '#66FF00');
+        });
+        $('#signalSearch').bind('keypress', function (event) {
+            if (event.keyCode === 13) {
+                $("#searchSignal").click();
             }
         });
     }
@@ -238,9 +295,9 @@ $(document).ready(function () {
                 "left": (e.pageX + 20) + "px"
             }).show("fast")
         }).mouseout(function () {
-            $("#tip_div").remove()
+            $("#tip_div").remove();
         }).mousemove(function (e) {
-            $("#tip_div").css({"top": (e.pageY + 10) + "px", "position": "absolute", "left": (e.pageX + 20) + "px"})
+            $("#tip_div").css({"top": (e.pageY + 10) + "px", "position": "absolute", "left": (e.pageX + 20) + "px"});
         });
         //左键单击显示连接点和右键单击显示详细信息
         circleElements.mousedown(function (e) {
@@ -253,6 +310,7 @@ $(document).ready(function () {
             }
             //鼠标左键单击显示连接点
             if (e.which === 1) {
+                $("#tip_div").remove();//主动清除信息悬浮窗防止延迟卡顿
                 clearColor();
                 net = $(this).attr("net");
                 refdes = $(this).attr("refdes");
