@@ -165,10 +165,10 @@ $(document).ready(function () {
             isTextShowed = !isTextShowed;
             if (isTextShowed) {
                 showText();
-                $("#showText").text("隐藏全部名称");
+                $("#showText").text("隐藏名称");
             } else {
                 $("text").remove();
-                $("#showText").text("显示全部名称");
+                $("#showText").text("显示名称（卡顿）");
             }
         });
         activeExtraFunctions();
@@ -264,8 +264,8 @@ $(document).ready(function () {
 
     function highlightConnection(net, refdes, number) {
         $("circle[net='" + net + "']").each(function () {
-            $(this).css("fill", "rgb(170, 170, 0)");
-            $(this).parent().children(":first").css({"stroke": "rgb(246, 246, 0)"})
+            $(this).css("fill", "rgb(255, 255, 0)");
+            $(this).parent().find("polygon").css({"stroke": "rgb(255, 255, 0)"})
         });
 
         var selectedPolygon = $("polygon[refdes='" + refdes + "']");
@@ -273,7 +273,6 @@ $(document).ready(function () {
         selectedPolygon.parent().children("circle[number='" + number + "']").css("fill", "red");
     }
 
-    //admin模式下，显示全部名称
     function showText() {
         //显示元器件名称，并保存所有名称以供搜索
         $("text").remove();
@@ -281,51 +280,61 @@ $(document).ready(function () {
         var flip = blueprintDiv.children(":first").children(":first").attr("transform");
         flip = flip.substring(6, flip.length - 1).split(",");
         $("polygon").each(function () {
-            var points = $(this).attr("points").split(" ");
-            var topLeft = points[0].split(",");
-            var bottomRight = points[2].split(",");
-            var centerX = parseFloat(topLeft[0]) + (parseFloat(bottomRight[0]) - parseFloat(topLeft[0])) / 2;
-            var centerY = parseFloat(topLeft[1]) + (parseFloat(bottomRight[1]) - parseFloat(topLeft[1])) / 2;
-            var width = Math.abs(parseFloat(bottomRight[0]) - parseFloat(topLeft[0]));
-            var height = Math.abs(parseFloat(bottomRight[1]) - parseFloat(topLeft[1]));
-            var fontSize = 1;
-            if (width > height) {
-                fontSize = height * 0.17;
-                if (fontSize < 25) {
-                    fontSize *= 1.8;
-                } else if (fontSize < 10) {
-                    fontSize *= 2.5;
-                } else if (fontSize < 5) {
-                    fontSize *= 4;
-                }
-                //修正镜面翻转
-                if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalText'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateX'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateY'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
-                }
-            } else {
-                fontSize = width * 0.17;
-                if (fontSize < 25) {
-                    fontSize *= 1.8;
-                } else if (fontSize < 10) {
-                    fontSize *= 2.5;
-                } else if (fontSize < 5) {
-                    fontSize *= 4;
-                }
-                //修正镜面翻转
-                if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextr'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateX'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateY'>" + $(this).attr("refdes") + "</text>");
-                } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
-                    $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
+            if (true) {
+                var points = $(this).attr("points").split(" ");
+                var topLeft = points[0].split(",");
+                var bottomRight = points[2].split(",");
+                var centerX = parseFloat(topLeft[0]) + (parseFloat(bottomRight[0]) - parseFloat(topLeft[0])) / 2;
+                var centerY = parseFloat(topLeft[1]) + (parseFloat(bottomRight[1]) - parseFloat(topLeft[1])) / 2;
+                var width = Math.abs(parseFloat(bottomRight[0]) - parseFloat(topLeft[0]));
+                var height = Math.abs(parseFloat(bottomRight[1]) - parseFloat(topLeft[1]));
+                var fontSize = 1;
+                if (width > height) {
+                    fontSize = height * 0.17;
+                    if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 25) {
+                        fontSize *= 1.9;
+                    } else if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 5) {
+                        fontSize *= 4;
+                    }
+                    if (true) {
+                        //修正镜面翻转
+                        if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalText'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateX'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateY'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='horizontalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
+                        }
+                    }
+                } else {
+                    fontSize = width * 0.17;
+                    if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 25) {
+                        fontSize *= 1.9;
+                    } else if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 5) {
+                        fontSize *= 4;
+                    }
+                    if (true) {
+                        //修正镜面翻转
+                        if (parseInt(flip[0]) > 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextr'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) > 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateX'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) > 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateY'>" + $(this).attr("refdes") + "</text>");
+                        } else if (parseInt(flip[0]) < 0 && parseInt(flip[1]) < 0) {
+                            $(this).before("<text x='" + centerX + "' y='" + centerY + "' style='font-size: " + fontSize + "px' class='verticalTextRotateXY'>" + $(this).attr("refdes") + "</text>");
+                        }
+                    }
                 }
             }
         });

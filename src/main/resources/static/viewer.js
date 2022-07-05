@@ -269,8 +269,8 @@ $(document).ready(function () {
 
     function highlightConnection(net, refdes, number) {
         $("circle[net='" + net + "']").each(function () {
-            $(this).css("fill", "rgb(170, 170, 0)");
-            $(this).parent().children(":first").css({"stroke": "rgb(246, 246, 0)"})
+            $(this).css("fill", "rgb(255, 255, 0)");
+            $(this).parent().find("polygon").css({"stroke": "rgb(255, 255, 0)"})
         });
 
         var selectedPolygon = $("polygon[refdes='" + refdes + "']");
@@ -296,8 +296,10 @@ $(document).ready(function () {
                 var fontSize = 1;
                 if (width > height) {
                     fontSize = height * 0.17;
-                    if (fontSize < 25) {
-                        fontSize *= 1.8;
+                    if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 25) {
+                        fontSize *= 1.9;
                     } else if (fontSize < 10) {
                         fontSize *= 2.5;
                     } else if (fontSize < 5) {
@@ -317,8 +319,10 @@ $(document).ready(function () {
                     }
                 } else {
                     fontSize = width * 0.17;
-                    if (fontSize < 25) {
-                        fontSize *= 1.8;
+                    if (fontSize < 10) {
+                        fontSize *= 2.5;
+                    } else if (fontSize < 25) {
+                        fontSize *= 1.9;
                     } else if (fontSize < 10) {
                         fontSize *= 2.5;
                     } else if (fontSize < 5) {
