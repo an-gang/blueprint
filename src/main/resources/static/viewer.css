@@ -92,3 +92,7 @@ polygon {
 label {
     color: white;
 }
+
+circle[net="GND"]{
+    fill:gray;
+}
