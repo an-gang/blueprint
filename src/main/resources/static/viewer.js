@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    var name = window.location.href.substring(window.location.href.lastIndexOf("?name=") + 6);
+    var name = window.location.href.substring(window.location.href.lastIndexOf("?name=") + 6).replace(/%20/g," ");
     document.title = name;
     var svgSourceFront;
     var svgSourceBack;
