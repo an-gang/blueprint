@@ -93,6 +93,6 @@ label {
     color: white;
 }
 
-circle[net="GND"]{
-    fill:gray;
-}
+/*circle[net="GND"]{*/
+    /*fill:gray;*/
+/*}*/
