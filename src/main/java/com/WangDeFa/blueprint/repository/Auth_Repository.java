@@ -4,6 +4,7 @@ import com.WangDeFa.blueprint.other.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.Map;
 
 
 @Repository
-public class Auth_Repository{
+public class Auth_Repository {
 
     @Resource
     private JdbcTemplate template;
@@ -24,10 +25,10 @@ public class Auth_Repository{
             if (result.size() > 0) {
                 rtn.put("status", "success");
                 Map<String, Object> userEntry = result.get(0);
-                if(userEntry.get("name")!=""){
-                    rtn.put("currentUser",userEntry.get("name"));
-                }else {
-                    rtn.put("currentUser",userEntry.get("username"));
+                if (userEntry.get("name") != "" && userEntry.get("name") != null) {
+                    rtn.put("currentUser", userEntry.get("name"));
+                } else {
+                    rtn.put("currentUser", userEntry.get("username"));
                 }
             } else {
                 rtn.put("status", "failed");

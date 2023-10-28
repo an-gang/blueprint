@@ -5,6 +5,6 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.108.114.106:3306/blueprint?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://47.98.41.204:3306/blueprint?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: "%Hdk27tH2UgN"
+    password: "Test980120"
