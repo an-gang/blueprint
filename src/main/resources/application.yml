@@ -1,10 +1,10 @@
 server:
-  port: 8888
+  port: 9988
   tomcat:
     max-http-form-post-size: 4MB
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://47.98.41.204:3306/blueprint?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/blueprint?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: "Test980120"
+    password: 不告诉你
